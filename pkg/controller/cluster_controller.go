@@ -206,7 +206,11 @@ func (r *ClusterReconciler) Reconcile(ctx context.Context, req reconcile.Request
 func (r *ClusterReconciler) updateClusterStatus(ctx context.Context, log logr.Logger, cluster *resource.Cluster) error {
 	cluster.SetClusterStatus()
 	return retry.RetryOnConflict(retry.DefaultBackoff, func() error {
-		return r.Client.Status().Update(ctx, cluster.Unwrap())
+		time.Sleep(10*time.Second)
+		log.Info("GREPME: Attempting status update")
+		err := r.Client.Status().Update(ctx, cluster.Unwrap())
+		log.Info(fmt.Sprintf("GREPME: Got err %+v", err))
+		return err
 	})
 }
 
